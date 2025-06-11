@@ -1,252 +1,117 @@
-# DocuStore - Decentralized Document Storage
+# Todo App
 
-DocuStore is a decentralized application that allows users to store and manage their documents on the blockchain. It uses the Abstraxion library for wallet integration and smart contract interaction.
+This application provides a basic implementation of the DocuStore smart contract which is a decentralized document storage solution. DocuStore enables users to store and manage structured documents within collections.
 
-## Features
+The major features include:
 
-### User Authentication
-- Wallet connection using Abstraxion
-- Secure authentication flow
-- User session management
-- Logout functionality
-
-### Document Management
-- Create, read, update, and delete documents
-- Document metadata storage
-- Document versioning
-- Access control
-
-### User Interface
-- Modern, responsive design
-- Dark mode support
-- Toast notifications for user feedback
-- Navigation bar with user address display
-
-## Smart Contract Integration
-
-The application interacts with a smart contract that implements the following collections:
-
-### Documents Collection
-```rust
-struct Document {
-    owner: String,
-    title: String,
-    content: String,
-    created_at: u64,
-    updated_at: u64,
-    metadata: Option<Metadata>,
-}
-```
-
-### Profiles Collection
-```rust
-struct Profile {
-    display_name: String,
-    bio: String,
-    avatar: String,
-    social_links: Vec<SocialLink>,
-}
-```
-
-### Settings Collection
-```rust
-struct Settings {
-    dark_mode: bool,
-    notifications: bool,
-    language: String,
-    timezone: String,
-}
-```
-
-## Frontend Architecture
-
-### Pages
-1. **Dashboard** (`/`)
-   - Overview of user's documents
-   - Quick access to recent documents
-   - Profile summary
-
-2. **Documents** (`/documents`)
-   - List of all documents
-   - Create new document
-   - Search and filter documents
-
-3. **Profile** (`/profile`)
-   - User profile management
-   - Update display name, bio, and avatar
-   - Social links management
-
-4. **Settings** (`/settings`)
-   - App preferences
-   - Dark mode toggle
-   - Notification settings
-   - Language and timezone selection
-
-### Components
-
-1. **Navigation**
-   - Responsive navigation bar
-   - Wallet connection button
-   - User address display
-   - Logout functionality
-
-2. **Toast**
-   - Success/error notifications
-   - Auto-dismissing alerts
-   - Customizable messages
-
-3. **Document Card**
-   - Document preview
-   - Quick actions
-   - Metadata display
+* Create, read, update, and delete documents
+* Granular access control
+* Querying all collection and document data
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 16+
-- npm or yarn
-- XION wallet
+
+* Node.js
+* npm
 
 ### Installation
 
 1. Clone the repository:
-```bash
-git clone [repository-url]
-cd docu-store-frontend
-```
+
+   ```bash
+   git clone https://github.com/burnt-labs/todo-app-frontend.git
+   cd todo-app-frontend
+   ```
 
 2. Install dependencies:
-```bash
-npm install
-```
 
-3. Create a `.env.local` file:
-```env
-NEXT_PUBLIC_CONTRACT_ADDRESS=your_contract_address
-```
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env.local` file with the following configuration:
+
+   ```env
+   NEXT_PUBLIC_CONTRACT_ADDRESS=your_contract_address
+   NEXT_PUBLIC_TREASURY_ADDRESS=your_treasury_contract
+   NEXT_PUBLIC_RPC_URL=https://rpc.xion-testnet-2.burnt.com:443
+   NEXT_PUBLIC_REST_URL=https://api.xion-testnet-2.burnt.com
+   ```
+
+   * `NEXT_PUBLIC_CONTRACT_ADDRESS`: The deployed address of your DocuStore smart contract
+   * `NEXT_PUBLIC_TREASURY_ADDRESS`: The address of your fee treasury contract
+   * `NEXT_PUBLIC_RPC_URL`: The RPC endpoint used to send transactions and interact with the Xion blockchain (can be changed to point to a different network or node)
+   * `NEXT_PUBLIC_REST_URL`: The REST API endpoint used to query blockchain data and contract state (also configurable if using a different network or node)
 
 4. Start the development server:
-```bash
-npm run dev
+
+   ```bash
+   npm run dev
+   ```
+
+## Smart Contract Collections
+
+This app integrates with a DocuStore smart contract that defines the following data models:
+
+### Documents Collection
+
+```rust
+struct Todo {
+  id: String;
+  text: String;
+  completed: Boolean;
+  createdAt: Number;
+}
 ```
 
-### Environment Variables
+### Profiles Collection
 
-- `NEXT_PUBLIC_CONTRACT_ADDRESS`: The address of your deployed smart contract
-
-## Smart Contract Interaction
-
-### Document Operations
-
-1. **Create Document**
-```typescript
-await client.execute(account.bech32Address, contractAddress, {
-  Set: {
-    collection: "documents",
-    document: documentId,
-    data: JSON.stringify(documentData)
-  }
-}, "auto");
+```rust
+struct Profile {
+  displayName: String;
+  bio: String;
+  avatar: String;
+  socialLinks: {
+    twitter?: String;
+    github?: String;
+    website?: String;
+  };
+}
 ```
 
-2. **Get Document**
-```typescript
-const response = await queryClient?.queryContractSmart(contractAddress, {
-  Get: {
-    collection: "documents",
-    document: documentId
-  }
-});
+### Settings Collection
+
+```rust
+struct Settings {
+  darkMode: Boolean;
+  notifications: Boolean;
+  language: String;
+  timezone: String;
+}
 ```
 
-3. **Update Document**
-```typescript
-await client.execute(account.bech32Address, contractAddress, {
-  Set: {
-    collection: "documents",
-    document: documentId,
-    data: JSON.stringify(updatedData)
-  }
-}, "auto");
-```
+## Frontend Structure
 
-4. **Delete Document**
-```typescript
-await client.execute(account.bech32Address, contractAddress, {
-  Delete: {
-    collection: "documents",
-    document: documentId
-  }
-}, "auto");
-```
+### Pages
 
-### Profile Operations
+1. **Dashboard** (`/`)
 
-1. **Update Profile**
-```typescript
-await client.execute(account.bech32Address, contractAddress, {
-  Set: {
-    collection: "profiles",
-    document: account.bech32Address,
-    data: JSON.stringify(profileData)
-  }
-}, "auto");
-```
+   * Overview of recent todos
+   * Quick access to key features
+   * Profile snapshot
 
-2. **Get Profile**
-```typescript
-const response = await queryClient?.queryContractSmart(contractAddress, {
-  Get: {
-    collection: "profiles",
-    document: account.bech32Address
-  }
-});
-```
+2. **Todos** (`/documents`)
 
-## Error Handling
+   * View all todos
+   * Create and manage todos
 
-The application implements comprehensive error handling:
+3. **Profile** (`/profile`)
 
-1. **Smart Contract Errors**
-   - Transaction failures
-   - Invalid operations
-   - Permission denied
+   * Update display name, bio, avatar
+   * Manage social links
 
-2. **Network Errors**
-   - Connection issues
-   - Timeout handling
-   - Retry mechanisms
+4. **Settings** (`/settings`)
 
-3. **User Feedback**
-   - Toast notifications
-   - Error messages
-   - Loading states
-
-## Security Considerations
-
-1. **Authentication**
-   - Secure wallet connection
-   - Session management
-   - Access control
-
-2. **Data Validation**
-   - Input sanitization
-   - Type checking
-   - Size limits
-
-3. **Transaction Security**
-   - Gas estimation
-   - Transaction confirmation
-   - Error recovery
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+   * Toggle dark mode and notifications
+   * Set language and timezone preferences
